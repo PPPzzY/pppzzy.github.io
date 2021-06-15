@@ -1,16 +1,448 @@
-{% extends '_layout.njk' %}
-{% import '_macro/sidebar.njk' as sidebar_template with context %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-{% block title %}{{ page.title }} | {{ title }}{% endblock %}
+<link rel="stylesheet" href="/css/main.css">
 
-{% block class %}post posts-expand{% endblock %}
 
-{% block content %}
 
-  {{ partial('_macro/post.njk', {post: page}) }}
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
 
-{% endblock %}
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"8.0.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+  <meta name="description" content="上 对于有N个顶点的无向图，怎样存储可以省一半空间？  用一个长度为N(N+1)&#x2F;2的1维数组      图的邻接矩阵表示法123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构——图">
+<meta property="og:url" content="http://yoursite.com/DS-Graph/index.html">
+<meta property="og:site_name" content="PPPzzY">
+<meta property="og:description" content="上 对于有N个顶点的无向图，怎样存储可以省一半空间？  用一个长度为N(N+1)&#x2F;2的1维数组      图的邻接矩阵表示法123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/DS-Graph/image-20200324192347351.png">
+<meta property="og:image" content="http://yoursite.com/DS-Graph/image-20200324192430508.png">
+<meta property="og:image" content="http://yoursite.com/DS-Graph/image-20200324192545682.png">
+<meta property="article:published_time" content="2020-04-14T07:06:44.000Z">
+<meta property="article:modified_time" content="2020-11-09T08:34:33.373Z">
+<meta property="article:author" content="PPPzzY">
+<meta property="article:tag" content="学校课程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/DS-Graph/image-20200324192347351.png">
+
+
+<link rel="canonical" href="http://yoursite.com/DS-Graph/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>数据结构——图 | PPPzzY</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">PPPzzY</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#上"><span class="nav-number">1.</span> <span class="nav-text">上</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#图的邻接矩阵表示法"><span class="nav-number">1.1.</span> <span class="nav-text">图的邻接矩阵表示法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#图的邻接表表示法"><span class="nav-number">1.2.</span> <span class="nav-text">图的邻接表表示法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DFS—邻接表存储的图"><span class="nav-number">1.3.</span> <span class="nav-text">DFS—邻接表存储的图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BFS—邻接矩阵存储的图"><span class="nav-number">1.4.</span> <span class="nav-text">BFS—邻接矩阵存储的图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实例：六度空间"><span class="nav-number">1.5.</span> <span class="nav-text">实例：六度空间</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#中"><span class="nav-number">2.</span> <span class="nav-text">中</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#习题"><span class="nav-number">2.1.</span> <span class="nav-text">习题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Tree-Traversals-Again"><span class="nav-number">2.1.1.</span> <span class="nav-text">Tree Traversals Again</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Complete-Binary-Search-Tree"><span class="nav-number">2.1.2.</span> <span class="nav-text">Complete Binary Search Tree</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Huffman-Codes"><span class="nav-number">2.1.3.</span> <span class="nav-text">Huffman Codes</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最短路径问题"><span class="nav-number">2.2.</span> <span class="nav-text">最短路径问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#下"><span class="nav-number">3.</span> <span class="nav-text">下</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#最小生成树问题"><span class="nav-number">3.1.</span> <span class="nav-text">最小生成树问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#拓扑排序"><span class="nav-number">3.2.</span> <span class="nav-text">拓扑排序</span></a></li></ol></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="PPPzzY"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">PPPzzY</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/DS-Graph/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="PPPzzY">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="PPPzzY">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据结构——图
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-04-14 15:06:44" itemprop="dateCreated datePublished" datetime="2020-04-14T15:06:44+08:00">2020-04-14</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2020-11-09 16:34:33" itemprop="dateModified" datetime="2020-11-09T16:34:33+08:00">2020-11-09</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Data-Structure/" itemprop="url" rel="index"><span itemprop="name">Data Structure</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="上"><a href="#上" class="headerlink" title="上"></a>上</h2><blockquote>
+<p>对于有N个顶点的无向图，怎样存储可以省一半空间？</p>
+<ul>
+<li>用一个长度为N(N+1)/2的1维数组</li>
+</ul>
+</blockquote>
+<p><img src="/DS-Graph/image-20200324192347351.png" alt="image-20200324192347351" style="zoom: 67%;"></p>
+<p><img src="/DS-Graph/image-20200324192430508.png" alt="image-20200324192430508" style="zoom:67%;"></p>
+<p><img src="/DS-Graph/image-20200324192545682.png" alt="image-20200324192545682" style="zoom:67%;"></p>
+<h3 id="图的邻接矩阵表示法"><a href="#图的邻接矩阵表示法" class="headerlink" title="图的邻接矩阵表示法"></a>图的邻接矩阵表示法</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MaxVertexNum 100    <span class="comment">/* 最大顶点数设为100 */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> INFINITY 65535      <span class="comment">/* ∞设为双字节无符号整数的最大值65535*/</span></span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> Vertex;         <span class="comment">/* 用顶点下标表示顶点,为整型 */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> WeightType;     <span class="comment">/* 边的权值设为整型 */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">char</span> DataType;      <span class="comment">/* 顶点存储的数据类型设为字符型 */</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">// 边的定义</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">ENode</span> *<span class="title">PtrToENode</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ENode</span>&#123;</span></span><br><span class="line">    Vertex V1, V2;      <span class="comment">/* 有向边&lt;V1, V2&gt; */</span></span><br><span class="line">    WeightType Weight;  <span class="comment">/* 权重 */</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">typedef</span> PtrToENode Edge;</span><br><span class="line">        </span><br><span class="line"><span class="comment">// 图结点的定义</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">GNode</span> *<span class="title">PtrToGNode</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">GNode</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> Nv;  <span class="comment">/* 顶点数 */</span></span><br><span class="line">    <span class="keyword">int</span> Ne;  <span class="comment">/* 边数   */</span></span><br><span class="line">    WeightType G[MaxVertexNum][MaxVertexNum]; <span class="comment">/* 邻接矩阵 */</span></span><br><span class="line">    DataType Data[MaxVertexNum];      		  <span class="comment">/* 存顶点的数据 */</span></span><br><span class="line">    <span class="comment">/* 注意：很多情况下，顶点无数据，此时Data[]可以不用出现 */</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">typedef</span> PtrToGNode MGraph; <span class="comment">/* 以邻接矩阵存储的图类型 */</span></span><br><span class="line"> </span><br><span class="line"></span><br><span class="line"><span class="function">MGraph <span class="title">CreateGraph</span><span class="params">( <span class="keyword">int</span> VertexNum )</span></span>&#123; </span><br><span class="line">    <span class="comment">/* 初始化一个有VertexNum个顶点但没有边的图 */</span></span><br><span class="line">    Vertex V, W;</span><br><span class="line">    MGraph Graph;</span><br><span class="line">     </span><br><span class="line">    Graph = (MGraph)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(struct GNode)); <span class="comment">/* 建立图 */</span></span><br><span class="line">    Graph-&gt;Nv = VertexNum;</span><br><span class="line">    Graph-&gt;Ne = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">/* 初始化邻接矩阵 */</span></span><br><span class="line">    <span class="comment">/* 注意：这里默认顶点编号从0开始，到(Graph-&gt;Nv - 1) */</span></span><br><span class="line">    <span class="keyword">for</span> (V=<span class="number">0</span>; V&lt;Graph-&gt;Nv; V++)</span><br><span class="line">        <span class="keyword">for</span> (W=<span class="number">0</span>; W&lt;Graph-&gt;Nv; W++)  </span><br><span class="line">            Graph-&gt;G[V][W] = INFINITY;</span><br><span class="line">             </span><br><span class="line">    <span class="keyword">return</span> Graph; </span><br><span class="line">&#125;</span><br><span class="line">        </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">InsertEdge</span><span class="params">( MGraph Graph, Edge E )</span></span>&#123;</span><br><span class="line">     <span class="comment">/* 插入边 &lt;V1, V2&gt; */</span></span><br><span class="line">     Graph-&gt;G[E-&gt;V1][E-&gt;V2] = E-&gt;Weight;    </span><br><span class="line">     <span class="comment">/* 若是无向图，还要插入边&lt;V2, V1&gt; */</span></span><br><span class="line">     Graph-&gt;G[E-&gt;V2][E-&gt;V1] = E-&gt;Weight;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function">MGraph <span class="title">BuildGraph</span><span class="params">()</span></span>&#123;</span><br><span class="line">    MGraph Graph;</span><br><span class="line">    Edge E;</span><br><span class="line">    Vertex V;</span><br><span class="line">    <span class="keyword">int</span> Nv, i;</span><br><span class="line">     </span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;Nv);   <span class="comment">/* 读入顶点个数 */</span></span><br><span class="line">    Graph = CreateGraph(Nv); <span class="comment">/* 初始化有Nv个顶点但没有边的图 */</span> </span><br><span class="line">     </span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;(Graph-&gt;Ne));   <span class="comment">/* 读入边数 */</span></span><br><span class="line">    <span class="keyword">if</span> ( Graph-&gt;Ne != <span class="number">0</span> ) &#123; 	<span class="comment">/* 如果有边 */</span> </span><br><span class="line">        E = (Edge)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(struct ENode)); <span class="comment">/* 建立边结点 */</span> </span><br><span class="line">        <span class="comment">/* 读入边，格式为"起点 终点 权重"，插入邻接矩阵 */</span></span><br><span class="line">        <span class="keyword">for</span> (i=<span class="number">0</span>; i&lt;Graph-&gt;Ne; i++) &#123;</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">"%d %d %d"</span>, &amp;E-&gt;V1, &amp;E-&gt;V2, &amp;E-&gt;Weight); </span><br><span class="line">            <span class="comment">/* 注意：如果权重不是整型，Weight的读入格式要改 */</span></span><br><span class="line">            InsertEdge( Graph, E );</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; </span><br><span class="line"> </span><br><span class="line">    <span class="comment">/* 如果顶点有数据的话，读入数据 */</span></span><br><span class="line">    <span class="keyword">for</span> (V=<span class="number">0</span>; V&lt;Graph-&gt;Nv; V++) </span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">" %c"</span>, &amp;(Graph-&gt;Data[V]));</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> Graph;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="图的邻接表表示法"><a href="#图的邻接表表示法" class="headerlink" title="图的邻接表表示法"></a>图的邻接表表示法</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MaxVertexNum 100    <span class="comment">/* 最大顶点数设为100 */</span></span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> Vertex;         <span class="comment">/* 用顶点下标表示顶点,为整型 */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> WeightType;     <span class="comment">/* 边的权值设为整型 */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">char</span> DataType;      <span class="comment">/* 顶点存储的数据类型设为字符型 */</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">// 边的定义</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">ENode</span> *<span class="title">PtrToENode</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ENode</span>&#123;</span></span><br><span class="line">    Vertex V1, V2;      <span class="comment">/* 有向边&lt;V1, V2&gt; */</span></span><br><span class="line">    WeightType Weight;  <span class="comment">/* 权重 */</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">typedef</span> PtrToENode Edge;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// 邻接点的定义</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">AdjVNode</span> *<span class="title">PtrToAdjVNode</span>;</span> </span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">AdjVNode</span>&#123;</span></span><br><span class="line">    Vertex AdjV;        <span class="comment">/* 邻接点下标 */</span></span><br><span class="line">    WeightType Weight;  <span class="comment">/* 边权重 */</span></span><br><span class="line">    PtrToAdjVNode Next; <span class="comment">/* 指向下一个邻接点的指针 */</span></span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// 顶点表头结点的定义</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">Vnode</span>&#123;</span></span><br><span class="line">    PtrToAdjVNode FirstEdge;  <span class="comment">/* 边表头指针 */</span></span><br><span class="line">    DataType Data;            <span class="comment">/* 存顶点的数据 */</span></span><br><span class="line">    <span class="comment">/* 注意：很多情况下，顶点无数据，此时Data可以不用出现 */</span></span><br><span class="line">&#125; AdjList[MaxVertexNum];      <span class="comment">/* AdjList是邻接表类型 */</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">/* 图结点的定义 */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">GNode</span> *<span class="title">PtrToGNode</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">GNode</span>&#123;</span>  </span><br><span class="line">    <span class="keyword">int</span> Nv;     <span class="comment">/* 顶点数 */</span></span><br><span class="line">    <span class="keyword">int</span> Ne;     <span class="comment">/* 边数 */</span></span><br><span class="line">    AdjList G;  <span class="comment">/* 邻接表 */</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">typedef</span> PtrToGNode LGraph; <span class="comment">/* 以邻接表方式存储的图类型 */</span></span><br><span class="line"> </span><br><span class="line">  </span><br><span class="line"><span class="function">LGraph <span class="title">CreateGraph</span><span class="params">( <span class="keyword">int</span> VertexNum )</span> </span>&#123; </span><br><span class="line">    <span class="comment">/* 初始化一个有VertexNum个顶点但没有边的图 */</span></span><br><span class="line">    Vertex V;</span><br><span class="line">    LGraph Graph;</span><br><span class="line">     </span><br><span class="line">    Graph = (LGraph)<span class="built_in">malloc</span>( <span class="keyword">sizeof</span>(struct GNode) ); <span class="comment">/* 建立图 */</span></span><br><span class="line">    Graph-&gt;Nv = VertexNum;</span><br><span class="line">    Graph-&gt;Ne = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">/* 初始化邻接表头指针 */</span></span><br><span class="line">    <span class="comment">/* 注意：这里默认顶点编号从0开始，到(Graph-&gt;Nv - 1) */</span></span><br><span class="line">       <span class="keyword">for</span> (V=<span class="number">0</span>; V&lt;Graph-&gt;Nv; V++)</span><br><span class="line">        Graph-&gt;G[V].FirstEdge = <span class="literal">NULL</span>;</span><br><span class="line">             </span><br><span class="line">    <span class="keyword">return</span> Graph; </span><br><span class="line">&#125;</span><br><span class="line">        </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">InsertEdge</span><span class="params">( LGraph Graph, Edge E )</span> </span>&#123;</span><br><span class="line">    PtrToAdjVNode NewNode;</span><br><span class="line">     </span><br><span class="line">    <span class="comment">/* 插入边 &lt;V1, V2&gt; */</span></span><br><span class="line">    <span class="comment">/* 为V2建立新的邻接点 */</span></span><br><span class="line">    NewNode = (PtrToAdjVNode)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(struct AdjVNode));</span><br><span class="line">    NewNode-&gt;AdjV = E-&gt;V2;</span><br><span class="line">    NewNode-&gt;Weight = E-&gt;Weight;</span><br><span class="line">    <span class="comment">/* 将V2插入V1的表头 */</span></span><br><span class="line">    NewNode-&gt;Next = Graph-&gt;G[E-&gt;V1].FirstEdge;</span><br><span class="line">    Graph-&gt;G[E-&gt;V1].FirstEdge = NewNode;</span><br><span class="line">         </span><br><span class="line">    <span class="comment">/* 若是无向图，还要插入边 &lt;V2, V1&gt; */</span></span><br><span class="line">    <span class="comment">/* 为V1建立新的邻接点 */</span></span><br><span class="line">    NewNode = (PtrToAdjVNode)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(struct AdjVNode));</span><br><span class="line">    NewNode-&gt;AdjV = E-&gt;V1;</span><br><span class="line">    NewNode-&gt;Weight = E-&gt;Weight;</span><br><span class="line">    <span class="comment">/* 将V1插入V2的表头 */</span></span><br><span class="line">    NewNode-&gt;Next = Graph-&gt;G[E-&gt;V2].FirstEdge;</span><br><span class="line">    Graph-&gt;G[E-&gt;V2].FirstEdge = NewNode;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function">LGraph <span class="title">BuildGraph</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    LGraph Graph;</span><br><span class="line">    Edge E;</span><br><span class="line">    Vertex V;</span><br><span class="line">    <span class="keyword">int</span> Nv, i;</span><br><span class="line">     </span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;Nv);   	 <span class="comment">/* 读入顶点个数 */</span></span><br><span class="line">    Graph = CreateGraph(Nv); <span class="comment">/* 初始化有Nv个顶点但没有边的图 */</span> </span><br><span class="line">     </span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;(Graph-&gt;Ne));   <span class="comment">/* 读入边数 */</span></span><br><span class="line">    <span class="keyword">if</span> ( Graph-&gt;Ne != <span class="number">0</span> ) &#123; 	<span class="comment">/* 如果有边 */</span> </span><br><span class="line">        E = (Edge)<span class="built_in">malloc</span>( <span class="keyword">sizeof</span>(struct ENode) ); <span class="comment">/* 建立边结点 */</span> </span><br><span class="line">        <span class="comment">/* 读入边，格式为"起点 终点 权重"，插入邻接矩阵 */</span></span><br><span class="line">        <span class="keyword">for</span> (i=<span class="number">0</span>; i&lt;Graph-&gt;Ne; i++) &#123;</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">"%d %d %d"</span>, &amp;E-&gt;V1, &amp;E-&gt;V2, &amp;E-&gt;Weight); </span><br><span class="line">            <span class="comment">/* 注意：如果权重不是整型，Weight的读入格式要改 */</span></span><br><span class="line">            InsertEdge( Graph, E );</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; </span><br><span class="line"> </span><br><span class="line">    <span class="comment">/* 如果顶点有数据的话，读入数据 */</span></span><br><span class="line">    <span class="keyword">for</span> (V=<span class="number">0</span>; V&lt;Graph-&gt;Nv; V++) </span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">" %c"</span>, &amp;(Graph-&gt;G[V].Data));</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> Graph;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="DFS—邻接表存储的图"><a href="#DFS—邻接表存储的图" class="headerlink" title="DFS—邻接表存储的图"></a>DFS—邻接表存储的图</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Visit</span><span class="params">( Vertex V )</span></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"正在访问顶点%d\n"</span>, V);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="comment">/* Visited[]为全局变量，已经初始化为false */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">DFS</span><span class="params">( LGraph Graph, Vertex V, <span class="keyword">void</span> (*Visit)(Vertex) )</span></span>&#123;   </span><br><span class="line">    <span class="comment">/* 以V为出发点对邻接表存储的图Graph进行DFS搜索 */</span></span><br><span class="line">    PtrToAdjVNode W;</span><br><span class="line">     </span><br><span class="line">    Visit( V ); <span class="comment">/* 访问第V个顶点 */</span></span><br><span class="line">    Visited[V] = <span class="literal">true</span>; <span class="comment">/* 标记V已访问 */</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">for</span>( W=Graph-&gt;G[V].FirstEdge; W; W=W-&gt;Next ) </span><br><span class="line">        <span class="comment">/* 对V的每个邻接点W-&gt;AdjV */</span></span><br><span class="line">        <span class="keyword">if</span> ( !Visited[W-&gt;AdjV] )    <span class="comment">/* 若W-&gt;AdjV未被访问 */</span></span><br><span class="line">            DFS( Graph, W-&gt;AdjV, Visit );    <span class="comment">/* 则递归访问之 */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="BFS—邻接矩阵存储的图"><a href="#BFS—邻接矩阵存储的图" class="headerlink" title="BFS—邻接矩阵存储的图"></a>BFS—邻接矩阵存储的图</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// IsEdge(Graph, V, W)检查&lt;V, W&gt;是否图Graph中的一条边，即W是否V的邻接点。</span></span><br><span class="line"><span class="comment">// 此函数根据图的不同类型要做不同的实现，关键取决于对不存在的边的表示方法。</span></span><br><span class="line"><span class="comment">// 例如对有权图, 如果不存在的边被初始化为INFINITY, 则函数实现如下:</span></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">IsEdge</span><span class="params">( MGraph Graph, Vertex V, Vertex W )</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> Graph-&gt;G[V][W]&lt;INFINITY ? <span class="literal">true</span> : <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="comment">/* Visited[]为全局变量，已经初始化为false */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">BFS</span> <span class="params">( MGraph Graph, Vertex S, <span class="keyword">void</span> (*Visit)(Vertex) )</span> </span>&#123;   </span><br><span class="line">    <span class="comment">/* 以S为出发点对邻接矩阵存储的图Graph进行BFS搜索 */</span></span><br><span class="line">    Queue Q;     </span><br><span class="line">    Vertex V, W;</span><br><span class="line"> </span><br><span class="line">    Q = CreateQueue( MaxSize ); <span class="comment">/* 创建空队列, MaxSize为外部定义的常数 */</span></span><br><span class="line">    <span class="comment">/* 访问顶点S：此处可根据具体访问需要改写 */</span></span><br><span class="line">    Visit( S );</span><br><span class="line">    Visited[S] = <span class="literal">true</span>; 	<span class="comment">/* 标记S已访问 */</span></span><br><span class="line">    AddQ(Q, S); 	<span class="comment">/* S入队列 */</span></span><br><span class="line">     </span><br><span class="line">    <span class="keyword">while</span> ( !IsEmpty(Q) ) &#123;</span><br><span class="line">        V = DeleteQ(Q);  	<span class="comment">/* 弹出V */</span></span><br><span class="line">        <span class="keyword">for</span>( W=<span class="number">0</span>; W&lt;Graph-&gt;Nv; W++ ) 	<span class="comment">/* 对图中的每个顶点W */</span></span><br><span class="line">            <span class="comment">/* 若W是V的邻接点并且未访问过 */</span></span><br><span class="line">            <span class="keyword">if</span> ( !Visited[W] &amp;&amp; IsEdge(Graph, V, W) ) &#123;</span><br><span class="line">                <span class="comment">/* 访问顶点W */</span></span><br><span class="line">                Visit( W );</span><br><span class="line">                Visited[W] = <span class="literal">true</span>; 	<span class="comment">/* 标记W已访问 */</span></span><br><span class="line">                AddQ(Q, W); 	<span class="comment">/* W入队列 */</span></span><br><span class="line">            &#125;</span><br><span class="line">    &#125; <span class="comment">/* while结束*/</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="实例：六度空间"><a href="#实例：六度空间" class="headerlink" title="实例：六度空间"></a>实例：六度空间</h3><blockquote>
+<p>给定社交网络图，对每个节点计算符合“六度空间”理论的结点占结点总数的百分比</p>
+<p>算法思路：</p>
+<ul>
+<li>对每个节点进行BFS</li>
+<li>搜索过程累计访问的节点数</li>
+<li>需要记录“层”数，仅计算6层以内的节点数</li>
+</ul>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">BFS</span><span class="params">(Vertex V)</span> </span>&#123;</span><br><span class="line">    Visited[V] = <span class="literal">true</span>;</span><br><span class="line">    count = <span class="number">1</span>;</span><br><span class="line">    level = <span class="number">0</span>;</span><br><span class="line">    last = V;</span><br><span class="line">    Enqueue(V, Q);</span><br><span class="line">    <span class="keyword">while</span>(!IsEmpty(Q)) &#123;</span><br><span class="line">        V = DeleteQ(Q);</span><br><span class="line">        <span class="keyword">for</span>() &#123;</span><br><span class="line">            <span class="keyword">if</span> (!Visited[W]) &#123;</span><br><span class="line">                Visited[W] = <span class="literal">true</span>;</span><br><span class="line">                Enqueue(W, Q);</span><br><span class="line">                count++;</span><br><span class="line">                tail = W;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(V == last) &#123;</span><br><span class="line">            level++;</span><br><span class="line">            last = tail;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(level == <span class="number">6</span>)</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> count;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">SDS</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span>() &#123;</span><br><span class="line">        count = BFS(V);</span><br><span class="line">        Output(count/N);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="中"><a href="#中" class="headerlink" title="中"></a>中</h2><h3 id="习题"><a href="#习题" class="headerlink" title="习题"></a>习题</h3><h4 id="Tree-Traversals-Again"><a href="#Tree-Traversals-Again" class="headerlink" title="Tree Traversals Again"></a>Tree Traversals Again</h4><h4 id="Complete-Binary-Search-Tree"><a href="#Complete-Binary-Search-Tree" class="headerlink" title="Complete Binary Search Tree"></a>Complete Binary Search Tree</h4><h4 id="Huffman-Codes"><a href="#Huffman-Codes" class="headerlink" title="Huffman Codes"></a>Huffman Codes</h4><h3 id="最短路径问题"><a href="#最短路径问题" class="headerlink" title="最短路径问题"></a>最短路径问题</h3><h2 id="下"><a href="#下" class="headerlink" title="下"></a>下</h2><h3 id="最小生成树问题"><a href="#最小生成树问题" class="headerlink" title="最小生成树问题"></a>最小生成树问题</h3><h3 id="拓扑排序"><a href="#拓扑排序" class="headerlink" title="拓扑排序"></a>拓扑排序</h3>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AD%A6%E6%A0%A1%E8%AF%BE%E7%A8%8B/" rel="tag"># 学校课程</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/ComputerOrganization/" rel="prev" title="计算机组成原理">
+                  <i class="fa fa-chevron-left"></i> 计算机组成原理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/JSbasis/" rel="next" title="JS基础">
+                  JS基础 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+  
+  
+  
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">PPPzzY</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
